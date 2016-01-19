@@ -1,6 +1,6 @@
 
 CXX = clang++
-
+CXXFLAGS += -DGP2Y0A02F_DOUBLE
 
 all: GP2Y0A02F_test
 

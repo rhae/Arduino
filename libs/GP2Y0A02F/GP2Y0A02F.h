@@ -37,6 +37,11 @@ public:
   uint16_t GetDistanceCm(uint16_t);
   uint16_t GetDistanceRaw();
   
+#ifdef GP2Y0A02F_DOUBLE
+  double   GetDistance( );
+  double   GetDistance( uint16_t );
+#endif
+  
 private:
   int _pin;
 };

@@ -29,6 +29,14 @@
 
 /* local defined data types
 ---------------------------------------------------------------------------*/
+#ifdef GP2Y0A02F_DOUBLE
+struct _LUT_DBL {
+  uint16_t ADvalue;
+  double   Slope;
+  double   Offset;
+};
+#endif
+
 struct _LUT {
   uint16_t ADvalue;
   int      Slope;
@@ -47,6 +55,7 @@ int mock_analogRead();
 /* list of local defined functions
 ---------------------------------------------------------------------------*/
 static uint16_t Map( uint16_t );
+static double   MapDbl( uint16_t );
 
 /* external variables
 ---------------------------------------------------------------------------*/
@@ -58,6 +67,17 @@ static uint16_t Map( uint16_t );
 ---------------------------------------------------------------------------*/
 #ifdef CONFIG_FILE_ID
 static char _fileid[] = "$Id$";
+#endif
+
+#ifdef GP2Y0A02F_DOUBLE
+static struct _LUT_DBL _5V_LUT_DBL[] =
+{
+  { 409, -11.38 , 751 },
+  { 307,  -9.31 , 689 },
+  { 204,  -4.65 , 498 },
+  { 122,  -2.21 , 344 },
+  {   0,  -0.68 , 191 },
+};
 #endif
 
 static struct _LUT _5V_LUT[] =
@@ -95,6 +115,17 @@ uint16_t GP2Y0A02F::GetDistanceRaw()
 #endif
 }
 
+#ifdef GP2Y0A02F_DOUBLE
+double GP2Y0A02F::GetDistance()
+{
+  return GetDistanceCm( GetDistanceRaw() );
+}
+
+double GP2Y0A02F::GetDistance( uint16_t ADValue )
+{
+  return MapDbl( ADValue );
+}
+#endif
 
 uint16_t Map( uint16_t ADValue)
 {
@@ -128,5 +159,40 @@ uint16_t Map( uint16_t ADValue)
   
   return Dist;
 }
+
+#ifdef GP2Y0A02F_DOUBLE
+double MapDbl( uint16_t ADValue)
+{
+  uint16_t u;
+  double Dist = 0;
+  struct _LUT_DBL *p = _5V_LUT_DBL;
+  
+  if( ADValue < 100 )
+  {
+    return 130;
+  }
+  
+  if( ADValue > 512 )
+  {
+    return 21;
+  }
+  
+  for( u = 0; u < countof(_5V_LUT); u++ )
+  {
+    if( ADValue >= p->ADvalue )
+    {
+      Dist = ADValue - p->Offset;
+#ifdef GP2YA02F_DUMP
+      printf("%u:  Ofs/Slope/Dist: %d/%d/%d\n", u, p->Offset, p->Slope, Dist );
+#endif
+      Dist = Dist / p->Slope;
+      break;
+    }
+    p++;
+  }
+  
+  return Dist;
+}
+#endif
 
 /*______________________________________________________________________EOF_*/

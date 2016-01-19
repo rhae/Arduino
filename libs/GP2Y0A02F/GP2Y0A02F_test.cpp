@@ -97,8 +97,11 @@ int main(
   
     for( uint16_t u = 0; u < countof(s_TestVec); u++ )
     {
-      uint16_t Distance = Sen1.GetDistanceCm( s_TestVec[u] );
-      printf( "%u;%u\n", s_TestVec[u], Distance );
+      uint16_t Distance  = Sen1.GetDistanceCm( s_TestVec[u] );
+      double   Distance2 = Sen1.GetDistance( s_TestVec[u] );
+      double   Diff = Distance2 - Distance;
+      
+      printf( "%u;%u;%.3f;%.3f\n", s_TestVec[u], Distance, Distance2, Diff );
     }
   }
   

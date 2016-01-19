@@ -82,11 +82,11 @@ static struct _LUT_DBL _5V_LUT_DBL[] =
 
 static struct _LUT _5V_LUT[] =
 {
-  { 409, (int16_t)(-11.38 * 16), 751 },
-  { 307, (int16_t)( -9.31 * 16), 689 },
-  { 204, (int16_t)( -4.65 * 16), 498 },
-  { 122, (int16_t)( -2.21 * 16), 344 },
-  {   0, (int16_t)( -0.68 * 16), 191 },
+  { 409, (int16_t)(-11.38 * 64), 751 },
+  { 307, (int16_t)( -9.31 * 64), 689 },
+  { 204, (int16_t)( -4.65 * 64), 498 },
+  { 122, (int16_t)( -2.21 * 64), 344 },
+  {   0, (int16_t)( -0.68 * 64), 191 },
 };
 
 
@@ -151,7 +151,7 @@ uint16_t Map( uint16_t ADValue)
 #ifdef GP2YA02F_DUMP
       printf("%u:  Ofs/Slope/Dist: %d/%d/%d\n", u, p->Offset, p->Slope, Dist );
 #endif
-      Dist = (uint16_t) ( (Dist*16 + 8) / p->Slope );
+      Dist = (uint16_t) ( ((Dist<<6) + 32) / p->Slope );
       break;
     }
     p++;

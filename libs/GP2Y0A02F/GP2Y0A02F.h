@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#define GP2Y0A02F_VERSION "1.0.0"
+
 #if linux
 #else
 # if defined(ARDUINO) && ARDUINO >= 100

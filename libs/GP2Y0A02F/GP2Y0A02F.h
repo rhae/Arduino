@@ -10,15 +10,16 @@
 
 #include <stdint.h>
 
-#ifdef linux
+#if linux
 #else
-#if defined(ARDUINO) && ARDUINO >= 100
-  #include "Arduino.h"
-#else
-  #include "WProgram.h"
-  #include <pins_arduino.h>
+# if defined(ARDUINO) && ARDUINO >= 100
+#  include "Arduino.h"
+# else
+#  include "WProgram.h"
+#  include <pins_arduino.h>
+# endif
 #endif
-#endif
+
 
 /* constant definitions
 ---------------------------------------------------------------------------*/
@@ -36,11 +37,7 @@ public:
   uint16_t GetDistanceCm();
   uint16_t GetDistanceCm(uint16_t);
   uint16_t GetDistanceRaw();
-  
-#ifdef GP2Y0A02F_DOUBLE
-  double   GetDistance( );
-  double   GetDistance( uint16_t );
-#endif
+
   
 private:
   int _pin;

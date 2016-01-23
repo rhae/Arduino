@@ -29,14 +29,6 @@
 
 /* local defined data types
 ---------------------------------------------------------------------------*/
-#ifdef GP2Y0A02F_DOUBLE
-struct _LUT_DBL {
-  uint16_t ADvalue;
-  double   Slope;
-  double   Offset;
-};
-#endif
-
 struct _LUT {
   uint16_t ADvalue;
   int      Slope;
@@ -45,9 +37,6 @@ struct _LUT {
 
 /* list of external used functions, if not in headers
 ---------------------------------------------------------------------------*/
-#ifdef linux
-int mock_analogRead();
-#endif
 
 /* list of global defined functions
 ---------------------------------------------------------------------------*/
@@ -55,7 +44,6 @@ int mock_analogRead();
 /* list of local defined functions
 ---------------------------------------------------------------------------*/
 static uint16_t Map( uint16_t );
-static double   MapDbl( uint16_t );
 
 /* external variables
 ---------------------------------------------------------------------------*/
@@ -69,17 +57,15 @@ static double   MapDbl( uint16_t );
 static char _fileid[] = "$Id$";
 #endif
 
-#ifdef GP2Y0A02F_DOUBLE
-static struct _LUT_DBL _5V_LUT_DBL[] =
-{
-  { 409, -11.38 , 751 },
-  { 307,  -9.31 , 689 },
-  { 204,  -4.65 , 498 },
-  { 122,  -2.21 , 344 },
-  {   0,  -0.68 , 191 },
-};
-#endif
-
+/**
+ * Calculation is based on a table that has offset and slope
+ * for some A/D values. For A/D values not in this list
+ * the distance is interpolated.
+ * 
+ * The slope is multiplied by 16 to gain some more precsion.
+ * The factor 64 was chosen to simplify the calculation hence
+ * a division by 64 can be implemented by a right shift of 6.
+ */
 static struct _LUT _5V_LUT[] =
 {
   { 409, (int16_t)(-11.38 * 64), 751 },
@@ -90,22 +76,51 @@ static struct _LUT _5V_LUT[] =
 };
 
 
-
+/*** GP2Y0A02F *************************************************************/
+/**
+ *  Constructor
+ * 
+ *  \param Pin    Pin of the analogue digital converter
+ */
 GP2Y0A02F::GP2Y0A02F( int Pin )
 {
   _pin = Pin;
 }
-  
+
+/*** GetDistanceCm *********************************************************/
+/**
+ *  Calculate the distance
+ * 
+ *  The value is read from the analogue pin and converted to a distance.
+ * 
+ *  \return distance in cm
+ */
 uint16_t GP2Y0A02F::GetDistanceCm()
 {
   return GetDistanceCm( GetDistanceRaw() );
 }
 
+/*** GetDistanceCm *********************************************************/
+/**
+ *  Calculate the distance
+ * 
+ *  \param ADValue    Value from analog to digital converter
+ * 
+ *  \return distance in cm
+ */
 uint16_t GP2Y0A02F::GetDistanceCm(uint16_t ADValue)
 {
   return Map( ADValue );
 }
 
+/*** GetDistanceRaw ********************************************************/
+/**
+ *  Reads from the analoue pin.
+ * 
+ *  On Linux this functions return 0.
+ * 
+ *  \return value from the analogue pin
+ */
 uint16_t GP2Y0A02F::GetDistanceRaw()
 {
 #ifdef linux
@@ -115,18 +130,14 @@ uint16_t GP2Y0A02F::GetDistanceRaw()
 #endif
 }
 
-#ifdef GP2Y0A02F_DOUBLE
-double GP2Y0A02F::GetDistance()
-{
-  return GetDistanceCm( GetDistanceRaw() );
-}
-
-double GP2Y0A02F::GetDistance( uint16_t ADValue )
-{
-  return MapDbl( ADValue );
-}
-#endif
-
+/*** Map ****************************************************************/
+/**
+ *  Calculate the distance
+ * 
+ *  \param ADValue    Value from analog to digital converter
+ * 
+ *  \return distance in cm
+ */
 uint16_t Map( uint16_t ADValue)
 {
   uint16_t u;
@@ -151,6 +162,8 @@ uint16_t Map( uint16_t ADValue)
 #ifdef GP2YA02F_DUMP
       printf("%u:  Ofs/Slope/Dist: %d/%d/%d\n", u, p->Offset, p->Slope, Dist );
 #endif
+      // shifting by 6 means divide by 64
+      // adding 32 corrects rounding
       Dist = (uint16_t) ( ((Dist<<6) + 32) / p->Slope );
       break;
     }
@@ -160,39 +173,5 @@ uint16_t Map( uint16_t ADValue)
   return Dist;
 }
 
-#ifdef GP2Y0A02F_DOUBLE
-double MapDbl( uint16_t ADValue)
-{
-  uint16_t u;
-  double Dist = 0;
-  struct _LUT_DBL *p = _5V_LUT_DBL;
-  
-  if( ADValue < 100 )
-  {
-    return 130;
-  }
-  
-  if( ADValue > 512 )
-  {
-    return 21;
-  }
-  
-  for( u = 0; u < countof(_5V_LUT); u++ )
-  {
-    if( ADValue >= p->ADvalue )
-    {
-      Dist = ADValue - p->Offset;
-#ifdef GP2YA02F_DUMP
-      printf("%u:  Ofs/Slope/Dist: %d/%d/%d\n", u, p->Offset, p->Slope, Dist );
-#endif
-      Dist = Dist / p->Slope;
-      break;
-    }
-    p++;
-  }
-  
-  return Dist;
-}
-#endif
 
-/*______________________________________________________________________EOF_*/
+/*_____________________________________________________________________EOF_*/

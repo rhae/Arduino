@@ -1,7 +1,7 @@
 
 CXX = clang++
-CXXFLAGS += -DGP2Y0A02F_DOUBLE
-
+CXXFLAGS += -I.. -DGP2Y0A02F_DOUBLE
+VPATH =..
 all: GP2Y0A02F_test
 
 %.o : %cpp

@@ -32,13 +32,17 @@
 /* list of global defined functions
 ---------------------------------------------------------------------------*/
 
-class GP2Y0A02F {
-public:
-  GP2Y0A02F( int Pin );
+class GP2Y0A02F
+{
   
-  uint16_t GetDistanceCm();
-  uint16_t GetDistanceCm(uint16_t);
-  uint16_t GetDistanceRaw();
+public:
+           GP2Y0A02F( int Pin );
+  
+  void     begin();
+  
+  uint16_t getDistanceCm();
+  uint16_t getDistanceCm(uint16_t);
+  uint16_t getDistanceRaw();
 
   
 private:

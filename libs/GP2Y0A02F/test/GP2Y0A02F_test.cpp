@@ -86,11 +86,12 @@ int main(
       )
 {
   GP2Y0A02F Sen1( 0 );
+  Sen1.begin();
   
   if( argc == 2 )
   {
     uint16_t ADvalue = (uint16_t) strtoul( argv[1], 0, 0 );
-    uint16_t Distance = Sen1.GetDistanceCm( ADvalue );
+    uint16_t Distance = Sen1.getDistanceCm( ADvalue );
     printf( "%u;%u\n", ADvalue, Distance );
   }
   else
@@ -98,7 +99,7 @@ int main(
   
     for( uint16_t u = 0; u < countof(s_TestVec); u++ )
     {
-      uint16_t Distance  = Sen1.GetDistanceCm( s_TestVec[u] );
+      uint16_t Distance  = Sen1.getDistanceCm( s_TestVec[u] );
       double   Distance2 = MapDbl( s_TestVec[u] );
       double   Diff = Distance2 - Distance;
       

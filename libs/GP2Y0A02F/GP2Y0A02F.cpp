@@ -6,7 +6,9 @@
 
 
 /* header of standard C - libraries */
+#ifdef GP2YA02F_DUMP
 #include <stdio.h>
+#endif
 #include <string.h>
 #include <math.h>
 
@@ -87,6 +89,18 @@ GP2Y0A02F::GP2Y0A02F( int Pin )
   _pin = Pin;
 }
 
+/*** begin *****************************************************************/
+/**
+ *  Initialize internals
+ * 
+ *  At the moment this function is empty and only here because the style
+ *  guide recommens it.
+ * 
+ */
+void GP2Y0A02F::begin( )
+{
+}
+
 /*** GetDistanceCm *********************************************************/
 /**
  *  Calculate the distance
@@ -95,9 +109,9 @@ GP2Y0A02F::GP2Y0A02F( int Pin )
  * 
  *  \return distance in cm
  */
-uint16_t GP2Y0A02F::GetDistanceCm()
+uint16_t GP2Y0A02F::getDistanceCm()
 {
-  return GetDistanceCm( GetDistanceRaw() );
+  return getDistanceCm( getDistanceRaw() );
 }
 
 /*** GetDistanceCm *********************************************************/
@@ -108,7 +122,7 @@ uint16_t GP2Y0A02F::GetDistanceCm()
  * 
  *  \return distance in cm
  */
-uint16_t GP2Y0A02F::GetDistanceCm(uint16_t ADValue)
+uint16_t GP2Y0A02F::getDistanceCm(uint16_t ADValue)
 {
   return Map( ADValue );
 }
@@ -121,7 +135,7 @@ uint16_t GP2Y0A02F::GetDistanceCm(uint16_t ADValue)
  * 
  *  \return value from the analogue pin
  */
-uint16_t GP2Y0A02F::GetDistanceRaw()
+uint16_t GP2Y0A02F::getDistanceRaw()
 {
 #ifdef linux
   return 0;

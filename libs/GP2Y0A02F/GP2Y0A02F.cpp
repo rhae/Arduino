@@ -155,7 +155,7 @@ uint16_t GP2Y0A02F::getDistanceRaw()
 uint16_t Map( uint16_t ADValue)
 {
   uint16_t u;
-  int32_t Dist = 0;
+  int16_t Dist = 0;
   struct _LUT *p = _5V_LUT;
   
   if( ADValue < 100 )
@@ -172,7 +172,7 @@ uint16_t Map( uint16_t ADValue)
   {
     if( ADValue >= p->ADvalue )
     {
-      Dist = ADValue - p->Offset;
+      Dist = (int16_t) ADValue - p->Offset;
 #ifdef GP2YA02F_DUMP
       printf("%u:  Ofs/Slope/Dist: %d/%d/%d\n", u, p->Offset, p->Slope, Dist );
 #endif

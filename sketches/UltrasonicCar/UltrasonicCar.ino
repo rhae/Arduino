@@ -57,6 +57,7 @@ int MovingAvg::Update( int Value )
   {
     uint16_t Sum = -_Sum;
     Avg = Sum >> 2;
+    Avg = -Avg;
   }
   else
   {
